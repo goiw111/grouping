@@ -35,6 +35,9 @@ struct Args {
 
     #[arg(short = 'd')]
     outdir: Option<std::path::PathBuf>,
+
+    #[arg(short = 's', default_value_t = -1i32)]
+    separate: i32,
 }
 
 #[derive(Debug, Serialize)]
