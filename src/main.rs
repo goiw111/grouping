@@ -4,6 +4,7 @@ use grouping::*;
 use comfy_table::Table;
 use comfy_table::Row;
 use xlsxwriter::*;
+use std::path::Path;
 
 
 #[derive(Debug, Parser)] // requires `derive` feature
@@ -13,7 +14,7 @@ struct Cli {
     #[command(subcommand)]
     command: Commands,
     #[arg(long, require_equals = true,)]
-    path: Option<String>
+    path: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]
@@ -38,6 +39,10 @@ enum Commands {
         name: Option<String>,
         #[arg(short = 'r')]
         remove: Option<u32>
+    },
+    Init {
+        #[arg(short= 'p')]
+        path: String,
     }
 }
 
@@ -50,8 +55,9 @@ enum Dumpargs {
 fn  main() -> Result<()> {
     let args = Cli::parse();
 
-    let conn = Connection::open("tp.db")?;
+    let conn = Connection::open("groups.db")?;
     match args.command {
+        Commands::Init { path } => println!("test {:?}", Path::new(&path)),
         Commands::Bi { tp, f_id, s_id , remove, dump } => {
             if let Some(id) = remove {
                 match remove_bi(&conn, id) {
@@ -98,7 +104,7 @@ fn  main() -> Result<()> {
                                 println!("{table}");
                             },
                             Some(Dumpargs::Xlsx) => {
-                                match Workbook::new("file.xlsx") {
+                                match Workbook::new(&format!("table_{}.xlsx",id)) {
                                     Ok(f) => {
                                         let mut sheet = f.add_worksheet(None).expect("non expected");
                                         sheet.set_column(1,3,20.0,None).expect("unexpected");
