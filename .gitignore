@@ -1,5 +1,5 @@
 /target
-groups.db
+*.db
 list.csv
 Cargo.lock
 *.pdf
